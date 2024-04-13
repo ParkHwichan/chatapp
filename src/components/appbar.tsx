@@ -25,7 +25,9 @@ export default function Appbar() {
                         <div className="flex items-center space-x-4">
                             {
                                 links.map((link) => (
-                                    <a href={link.url} className="">{link.title}</a>
+                                    <a
+                                        key={link.title}
+                                        href={link.url} className="">{link.title}</a>
                                 ))
                             }
 
