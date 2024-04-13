@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function ChatItem(
     props: {
         title: string;
@@ -11,7 +13,9 @@ export default function ChatItem(
 
 
 return (
-        <button className="p-4 hover:bg-black/20 text-start flex flex-col">
+        <Link
+            href={`/chat/${props.id}`}
+            className="p-4 hover:bg-black/20 text-start flex flex-col">
 
             <div className={"flex flex-row justify-between items-start w-full"}>
                 <div className={"flex flex-col"}>
@@ -46,7 +50,7 @@ return (
 
             </div>
 
-        </button>
+        </Link>
     )
 
 
