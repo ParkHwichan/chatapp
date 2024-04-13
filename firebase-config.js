@@ -10,10 +10,10 @@ const firebaseConfig = {
   messagingSenderId: "45375925553",
   appId: "1:45375925553:web:70fd00de9b3fbdbc5b9410",
 };
+
+// Firebase가 이미 초기화되었는지 확인
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-const firestore = firebase.firestore();
-
-export { firestore };
+export default firebase;
