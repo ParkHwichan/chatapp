@@ -26,7 +26,7 @@ export default function Page() {
 
 
 
-    return <div className={"flex flex-col"}>
+    return <div className={"flex flex-col max-w-lg mx-auto w-full"}>
         {
             chatList.map((chat) => (
                <ChatItem title={chat.title} id={chat.id}

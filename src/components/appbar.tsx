@@ -18,8 +18,8 @@ export default function Appbar() {
 
 
     return (
-        <div className="bg-primary-light">
-            <div className="container mx-auto">
+        <div className="">
+            <div className="max-w-lg mx-auto p-4">
                 <div className="flex justify-between items-center py-4">
                     <div className="flex items-center space-x-4">
                         <div className="flex items-center space-x-4">
