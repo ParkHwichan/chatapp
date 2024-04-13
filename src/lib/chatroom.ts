@@ -1,5 +1,4 @@
-import firestore from "../../firebase-config";
-
+import firestore from "./firebase-config";
 
 export type Message = {
     id: string,
@@ -17,9 +16,8 @@ export type Chatroom = {
 
 export async function getChatrooms() {
 
-    const chatrooms = await firestore.collection("chatrooms").get(
+    const chatrooms = await firestore.collection("chatrooms").get();
 
-    );
 
     const chatroomList: Chatroom[] = [];
 
