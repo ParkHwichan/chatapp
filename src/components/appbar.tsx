@@ -30,7 +30,6 @@ export default function Appbar() {
                                         href={link.url} className="">{link.title}</a>
                                 ))
                             }
-
                         </div>
                     </div>
                     <div className="flex items-center space-x-4">

@@ -11,9 +11,12 @@ const firebaseConfig = {
   appId: "1:45375925553:web:70fd00de9b3fbdbc5b9410",
 };
 
+let firestore = null;
 // Firebase가 이미 초기화되었는지 확인
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+if (!(firebase.getApps().length > 0) ) {
+  firestore = firebase.initializeApp(firebaseConfig);
 }
 
-export default firebase;
+
+
+export default  firestore;
