@@ -1,57 +1,101 @@
 import firestore from "./firebase-config";
-import {collection, getDocs} from "firebase/firestore/lite";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  doc,
+  getDoc,
+} from "firebase/firestore/lite";
+
+export type Writer = string | "me";
 
 export type Message = {
-    id: string,
-    user : string,
-    content: string,
-    createdAt: Date,
-
-}
+  id: string;
+  user: Writer;
+  content: string;
+  createdAt: Date;
+  unreadCount: number;
+};
 
 export type Chatroom = {
-    id: string,
-    name: string,
-    messages: Message[],
+  docID: string;
+  id: string;
+  name: string;
+  messages: Message[];
+};
+
+export type ChatroomHero = {
+  docID: string;
+  title: string;
+  lastMessage: string;
+  unreadCount: number;
+  lastMessageTime: Date;
+};
+
+export async function getChatrooms(): Promise<{ [key: string]: Chatroom }> {
+  const chatroomsRef = collection(firestore, "chatrooms");
+  const chatroomSnapshot = await getDocs(chatroomsRef);
+
+  const chatroomsMap: { [key: string]: Chatroom } = {}; // 인덱스 시그니처를 추가
+  chatroomSnapshot.docs.forEach((doc) => {
+    chatroomsMap[doc.id] = chatroomFromDoc({ docID: doc.id, ...doc.data() });
+  });
+
+  return chatroomsMap;
 }
 
-export async function getChatrooms() {
+export async function getChatroomDataFromDoc(documentId: string) {
+  // 주어진 ID의 문서 참조를 가져옵니다.
+  const docRef = doc(firestore, "chatrooms", documentId);
 
-    const chatrooms = collection(firestore, "chatrooms")
-    const chatroomSnapshot = await getDocs(chatrooms);
-    const chatroomList  = chatroomSnapshot.docs.map((doc) => {
-        return doc.data();
-    } );
+  // 문서 참조에서 단일 문서의 데이터를 가져옵니다.
+  const docSnapshot = await getDoc(docRef);
 
-
-    return chatroomList.map(chatroomFromDoc);
-
-
+  // 문서의 데이터를 반환합니다.
+  // 존재하지 않으면 undefined를 반환할 수 있도록 조건을 추가합니다.
+  return docSnapshot.exists() ? docSnapshot.data() : undefined;
+}
+export async function createMessage(chatroomId: string, message: Message) {
+  try {
+    const chatroomsRef = collection(firestore, "chatrooms", chatroomId);
+    await addDoc(chatroomsRef, message);
+    return true; // Success
+  } catch (error) {
+    console.error("Error creating message:", error);
+    return false; // Failure
+  }
 }
 
 function chatroomFromDoc(data: any) {
+  try {
+    // data 객체에서 필드를 직접 추출합니다.
 
-    try {
-        return {
-            id : data.id ?? "-1",
-            name: data.name ?? "Unknown",
-            messages: data.messages ? data.messages.map(messageFromDoc) : [] as Message[],
-        } as Chatroom;
-    }  catch (e) {
-        return {
-            id: "-1",
-            name: "Unknown",
-            messages: [] as Message[],
-        } as Chatroom;
-    }
-
-}
-
-function messageFromDoc(data: any) {
+    const { docID, id, name, messages, unreadCount } = data;
+    console.log("docID", docID);
     return {
-        id: data.id ?? "-1",
-        user: data.user ?? "Unknown",
-        content: data.content ?? "Unknown",
-        createdAt: data.createdAt ?? new Date(),
-    } as Message;
+      docID: docID ?? "-1",
+      id: id ?? "-1",
+      name: name ?? "Unknown",
+      messages: messages?.map(messageFromDoc) ?? ([] as Message[]),
+      unreadCount: unreadCount ?? 0,
+    } as Chatroom;
+  } catch (e) {
+    // 예외 처리에서 기본 채팅룸 객체를 반환합니다.
+    console.log("error");
+    return {
+      docID: "-1",
+      id: "-1",
+      name: "Unknown",
+      messages: [] as Message[],
+      unreadCount: 0,
+    } as Chatroom;
+  }
+}
+function messageFromDoc(data: any) {
+  return {
+    id: data.id ?? "-1",
+    user: data.user ?? "Unknown",
+    content: data.content ?? "Unknown",
+    createdAt: data.createdAt ?? new Date(),
+  } as Message;
 }
