@@ -5,6 +5,8 @@ import {
   addDoc,
   doc,
   getDoc,
+  updateDoc,
+  arrayUnion,
 } from "firebase/firestore/lite";
 
 export type Writer = string | "me";
@@ -57,11 +59,17 @@ export async function getChatroomDataFromDoc(documentId: string) {
 }
 export async function createMessage(chatroomId: string, message: Message) {
   try {
-    const chatroomsRef = collection(firestore, "chatrooms", chatroomId);
-    await addDoc(chatroomsRef, message);
+    const chatroomDocRef = doc(firestore, "chatrooms", chatroomId);
+    console.log(chatroomDocRef);
+
+    // Update the 'messages' field in the specific 'chatroomId' document
+    await updateDoc(chatroomDocRef, {
+      messages: arrayUnion(message),
+    });
+
     return true; // Success
   } catch (error) {
-    console.error("Error creating message:", error);
+    console.error("Error adding message to chatroom:", error);
     return false; // Failure
   }
 }

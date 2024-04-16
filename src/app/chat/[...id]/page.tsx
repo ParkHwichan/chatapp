@@ -2,41 +2,34 @@
 import ChatBox from "@/components/ChatBox";
 import { IoMdSend } from "react-icons/io";
 
-import {
-  Chatroom,
-  Message,
-  getChatroomDataFromDoc,
-  getChatrooms,
-} from "@/lib/chatroom";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store/store";
+import useSendMessage from "@/hooks/useSendMessage";
+import useFetchMessages from "@/hooks/useFetchMessages";
 
 export default function Page({ params }: { params: { id: string } }) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { text, setText, sendMessage } = useSendMessage(params.id[0]);
+  useFetchMessages(params.id[0]);
 
-  const router = useRouter();
-  console.log(params?.id[0]);
-  useEffect(() => {
-    getChatroomDataFromDoc(params?.id[0]).then((res) => {
-      setMessages(res?.messages);
-    });
-  }, []);
+  const messages = useSelector((state: RootState) => state.chat.messages);
 
-  const clickHandler = () => {
-    console.log("click");
-  };
+  const changeHandler = (e: any) => setText(e.target.value);
+  const clickHandler = () => sendMessage();
   return (
     <section
       className={"flex flex-col max-w-lg mx-auto w-full border bg-blue-200	"}
     >
       <div className="h-[500px] ">
         {messages.map((message) => {
-          console.log(message);
           return <ChatBox key={message.id} {...message} />;
         })}
       </div>
       <div className="flex relative">
-        <input className="border w-full" />
+        <input
+          value={text}
+          className="border w-full"
+          onChange={changeHandler}
+        />
         <IoMdSend className="absolute right-0" onClick={clickHandler} />
       </div>
     </section>

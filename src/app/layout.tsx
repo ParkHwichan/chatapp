@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import '../styles/globals.css'
+import "../styles/globals.css";
 import Appbar from "@/components/appbar";
+import Providers from "./provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,9 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={"flex w-full flex-col h-full "}>
-      <Appbar/>
-
-      {children}
+        <Appbar />
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

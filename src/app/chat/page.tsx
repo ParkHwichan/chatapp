@@ -1,12 +1,12 @@
 "use client";
 import ChatItem from "@/components/chatItem";
 import { useEffect, useState } from "react";
-import {
-  Chatroom,
-  getDocumentIdsFromCollection,
-  getChatrooms,
-  ChatroomHero,
-} from "@/lib/chatroom";
+import { Chatroom, getChatrooms, ChatroomHero } from "@/lib/chatroom";
+import { setChatrooms, setHeroInfo } from "@/redux/store/chatroomSlice";
+import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store/store";
+import { useSelector } from "react-redux";
+import useFetchChatrooms from "@/hooks/useFetchChatrooms";
 
 const chatList = [
   {
@@ -27,24 +27,10 @@ const chatList = [
 ];
 
 export default function Page() {
-  const [chatroomList, setChatroomList] = useState<Chatroom[]>([]);
-  const [chatroomHero, setChatroomHero] = useState<ChatroomHero[]>();
-  useEffect(() => {
-    getChatrooms().then((chatrooms) => {
-      const chatroomsArray = Object.values(chatrooms);
-      setChatroomList(chatroomsArray);
-      setChatroomHero(
-        chatroomsArray.map((chat) => ({
-          docID: chat.docID,
-          title: chat.name,
-          lastMessage: chat.messages[0]?.content.slice(0, 10) ?? "No message",
-          unreadCount: chat.messages[0]?.unreadCount ?? 0,
-          lastMessageTime: new Date(chat.messages[0]?.createdAt ?? Date.now()),
-        }))
-      );
-    });
-  }, []);
-
+  const chatroomHero = useSelector(
+    (state: RootState) => state.chatroom.heroInfo
+  );
+  useFetchChatrooms();
   return (
     <div className={"flex flex-col max-w-lg mx-auto w-full"}>
       {chatroomHero?.map((chat) => (
