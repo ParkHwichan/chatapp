@@ -5,6 +5,11 @@
 :root {
     --background : #ffffff;
     --foreground : #000000;
+
+
+
+    --appbar-height: 90px;
+        --h-with-appbar: calc(100vh - var(--appbar-height));
 }
 
 
@@ -12,3 +17,4 @@ body {
     color: var(--foreground);
     background: var(--background);
 }
+

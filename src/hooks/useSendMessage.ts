@@ -5,13 +5,15 @@ import { addMessage } from "@/redux/store/chatSlice";
 import { v4 as uuidv4 } from "uuid";
 
 function useSendMessage(chatroomId: string) {
-  const [text, setText] = useState("");
   const dispatch = useDispatch();
 
-  const sendMessage = () => {
+  const sendMessage = (
+    text: string,
+    onCompleted?: () => void,
+  ) => {
     const newMessage = {
       id: uuidv4(), // UUID를 사용하여 고유한 ID 생성
-      user: "me",
+      user: "other",
       content: text,
       createdAt: new Date(),
       unreadCount: 1,
@@ -20,7 +22,7 @@ function useSendMessage(chatroomId: string) {
     createMessage(chatroomId, newMessage).then((result) => {
       if (result) {
         dispatch(addMessage(newMessage));
-        setText("");
+
       } else {
         console.error("메시지 저장 실패");
       }
@@ -28,8 +30,6 @@ function useSendMessage(chatroomId: string) {
   };
 
   return {
-    text,
-    setText,
     sendMessage,
   };
 }
