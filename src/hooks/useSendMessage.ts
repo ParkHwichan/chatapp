@@ -27,7 +27,13 @@ function useSendMessage(chatroomId: string) {
         console.error("메시지 저장 실패");
       }
     });
+
+    if (onCompleted) {
+      onCompleted();
+    }
   };
+
+
 
   return {
     sendMessage,

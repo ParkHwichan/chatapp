@@ -8,6 +8,7 @@ import {
   updateDoc,
   arrayUnion,
 } from "firebase/firestore/lite";
+import {orderBy, query, where} from "@firebase/firestore";
 
 export type Writer = string | "me";
 
@@ -46,16 +47,25 @@ export async function getChatrooms(): Promise<{ [key: string]: Chatroom }> {
   return chatroomsMap;
 }
 
-export async function getChatroomDataFromDoc(documentId: string) {
+export async function getChatroomDataFromDoc(documentId: string, startTime? : Date) {
   // 주어진 ID의 문서 참조를 가져옵니다.
-  const docRef = doc(firestore, "chatrooms", documentId);
+  const subdocsRef = collection(firestore, `chatrooms/${documentId}/messages`);
+  // 쿼리 객체를 생성합니다. 여기서는 타임스탬프 기준으로 범위를 지정합니다.
 
-  // 문서 참조에서 단일 문서의 데이터를 가져옵니다.
-  const docSnapshot = await getDoc(docRef);
+  let querySnapshot;
+  if(startTime) {
+    const q = query(subdocsRef, where("timestamp", ">=", startTime), orderBy("timestamp"));
+     querySnapshot = await getDocs(q);
+  } else {
+    querySnapshot = await getDocs(subdocsRef);
+  }
 
+
+
+  // 결과를 배열로 변환하여 반환합니다.
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   // 문서의 데이터를 반환합니다.
   // 존재하지 않으면 undefined를 반환할 수 있도록 조건을 추가합니다.
-  return docSnapshot.exists() ? docSnapshot.data() : undefined;
 }
 export async function createMessage(chatroomId: string, message: Message) {
   try {
